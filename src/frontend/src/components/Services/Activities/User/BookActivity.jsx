@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Button, Modal, Form, FloatingLabel } from "react-bootstrap";
+import { useNavigate } from "react-router";
 
 const BookActivity = ({ book}) => {
  const [UserName, setUserName] = useState("");
@@ -15,6 +16,7 @@ const BookActivity = ({ book}) => {
 
   const isFormFilled = () => UserName && UserPhoneNumber && date && numberOfPeople;
 
+
   return (
     <>
       <Button
@@ -25,7 +27,7 @@ const BookActivity = ({ book}) => {
       </Button>
       <Modal show={show} onHide={handleClose} centered>
         <Modal.Header closeButton>
-          <Modal.Title>Adopt</Modal.Title>
+          <Modal.Title>Book Activity</Modal.Title>
         </Modal.Header>
         <Form>
           <Modal.Body>

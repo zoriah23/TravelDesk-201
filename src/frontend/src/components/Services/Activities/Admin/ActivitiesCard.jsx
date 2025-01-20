@@ -5,7 +5,7 @@ import { Card, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 const Activity = ({ activity }) => {
-  const { activityId, activityName, price, location, duration } = activity;
+  const { activityId, activityName, price, location, duration, equipment, participants } = activity;
   const navigate = useNavigate();
 
   const servicePrincipal = window.auth.principalText;
@@ -26,6 +26,8 @@ const Activity = ({ activity }) => {
             <p>Price: {price}</p>
             <p>Location: {location}</p>
             <p>Duration: {duration}</p>
+            <p>Equipment: {equipment}</p>
+            <p>Participants: {participants}</p>
           </Card.Text>
         </Card.Body>
       </Card>

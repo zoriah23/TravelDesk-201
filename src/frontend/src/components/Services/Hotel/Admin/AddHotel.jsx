@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import PropTypes from "prop-types";
 import { Button, Modal, Form, FloatingLabel } from "react-bootstrap";
 
-const AddHotel = ({ triggerAdd }) => {
+const AddHotel = ({ save }) => {
  const [name, setName] = useState("");
  const [location, setLocation] = useState("");
  const [ typeOfRoom, setTypeOfRoom] = useState("");
@@ -10,6 +10,7 @@ const AddHotel = ({ triggerAdd }) => {
   const [numberofRooms, setNumberofRooms] = useState("");
   const [description, setDescription] = useState("");
   const [amenities, setAmenities] = useState("");
+  const [availableRooms, setAvailableRooms] = useState("");
   
 
 
@@ -19,6 +20,33 @@ const AddHotel = ({ triggerAdd }) => {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+    const handleNumberOfRooms = (e) => {
+      const value = e.target.value;
+
+      // Allow only numbers
+      if (/^\d*$/.test(value)) {
+        setNumberofRooms(BigInt(value || 0)); // Convert valid input to BigInt
+      }
+    };
+
+    const handlePrice = (e) => {
+      const value = e.target.value;
+
+      // Allow only numbers
+      if (/^\d*$/.test(value)) {
+        setPrice(BigInt(value || 0)); // Convert valid input to BigInt
+      }
+    }
+
+    const handleAvailableRooms = (e) => {
+      const value = e.target.value;
+
+      // Allow only numbers
+      if (/^\d*$/.test(value)) {
+        setAvailableRooms(BigInt(value || 0)); // Convert valid input to BigInt
+      }
+    }
 
   return (
     <>
@@ -57,16 +85,16 @@ const AddHotel = ({ triggerAdd }) => {
               <Form.Control
                 type="text"
                 placeholder="Price"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
+                value={price.toString()}
+                onChange={handlePrice}
               />
             </FloatingLabel>
             <FloatingLabel controlId="floatingInput" label="Number of Rooms">
               <Form.Control
                 type="text"
                 placeholder="Number of Rooms"
-                value={numberofRooms}
-                onChange={(e) => setNumberofRooms(e.target.value)}
+                value={numberofRooms.toString()}
+                onChange={handleNumberOfRooms}
               />
             </FloatingLabel>
             <FloatingLabel controlId="floatingInput" label="Description">
@@ -85,6 +113,14 @@ const AddHotel = ({ triggerAdd }) => {
                 onChange={(e) => setAmenities(e.target.value)}
               />
             </FloatingLabel>
+            <FloatingLabel controlId="floatingInput" label="Available Rooms">
+              <Form.Control
+                type="text"
+                placeholder="Available Rooms"
+                value={availableRooms.toString()}
+                onChange={handleAvailableRooms}
+              />
+            </FloatingLabel>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
@@ -94,7 +130,7 @@ const AddHotel = ({ triggerAdd }) => {
               variant="primary"
               onClick={() => {
                 if (isFormFilled()) {
-                  triggerAdd({ name, location, typeOfRoom, price, numberofRooms, description, amenities });
+                  save({ name, location, typeOfRoom, price, numberofRooms, description, amenities, availableRooms });
                   handleClose();
                 }
               }}
@@ -109,7 +145,7 @@ const AddHotel = ({ triggerAdd }) => {
 };
 
 AddHotel.propTypes = {
-  triggerAdd: PropTypes.func.isRequired,
+  save: PropTypes.func.isRequired,
 };
 
 export default AddHotel;

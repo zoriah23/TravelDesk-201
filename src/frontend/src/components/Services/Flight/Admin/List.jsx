@@ -6,21 +6,41 @@ import {
   NotificationSuccess,
   NotificationError,
 } from "../../../utlis/Notifications";
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 
-import {  getTickets } from "../../../../utils/endpoints";
+import {   getFlights, getTicketsByFlight } from "../../../../utils/endpoints";
 
 const FlightsList = () => {
+ const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const flightId = params.get("flightId");
+
   const [loading, setLoading] = useState(false);
   const [show, setShow] = useState(false);
   const [tickets, setTickets] = useState([]);
+  const [flight, setFlight] = useState({})
+
+  //fetch flight
+    const fetchFlights = async () => {
+      try {
+        const flights = await getFlights();
+        const flight = flights.find((flight) => flight.flightId === flightId);
+  
+        setFlight(flight);
+        console.log("flight", flight);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+  
+    useEffect(() => {
+      fetchFlights();
+    }, [flightId]);
 
   //fetch tickets
-
-  const fetchTickets = useCallback(async () => {
-    setLoading(true);
+  const fetchTickets = async (flightId) => {
     try {
-      const tickets = await getTickets();
+      const tickets = await getTicketsByFlight(flightId);
       setTickets(tickets);
       setLoading(false);
       console.log("tickets", tickets);
@@ -28,13 +48,12 @@ const FlightsList = () => {
       setLoading(false);
       NotificationError("Error", "Failed to fetch tickets");
     }
-  }
-  , []);
+  };
 
   useEffect(() => {
-    fetchTickets();
-  }
-  , [fetchTickets]);
+    fetchTickets(flightId);
+  } , [flightId]);
+ 
 
 
   return (
@@ -42,6 +61,7 @@ const FlightsList = () => {
       <>
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h1 className="fs-4 fw-bold mb-0">Flight</h1>
+          {flightId}
          
           <ul>
            

@@ -17,9 +17,10 @@ const [loading, setLoading] = useState(false);
         <div>
           <NavBar />
           <h1>Manage Services provided</h1>
-          <div className="flex">
+          <div className="flex flex-column">
          
-            <Flights />
+       <Flights />
+
            
           </div>
         </div>

@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom";
 
 const Hotel = ({ hotel }) => {
   const {
-    id,
+    hotelId,
    name, location, availableRooms, price
   } = hotel;
   const navigate = useNavigate();
@@ -18,7 +18,9 @@ const Hotel = ({ hotel }) => {
       <Card
         className="w-[200px] h-[300px]"
         onClick={() =>
-          navigate(`/hotelInfo?canisterId=br5f7-7uaaa-aaaaa-qaaca-cai&hotelName=${name}`)
+          navigate(
+            `/hotelInfo?canisterId=bd3sg-teaaa-aaaaa-qaaba-cai&hotelId=${hotelId}`
+          )
         }
       >
         <Card.Body>

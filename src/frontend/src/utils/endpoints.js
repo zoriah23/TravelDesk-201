@@ -158,6 +158,20 @@ export async function getTickets() {
   }
 }
 
+//get ticket by id
+export async function getTicket(ticketId) {
+  try {
+    return await window.canister.TravelDeskAPi.getTicket(ticketId);
+  }
+  catch (err) {
+    if (err.name === "AgentHTTPResponseError") {
+      const authClient = window.auth.client;
+      await authClient.logout();
+    }
+    return [];
+  }
+}
+
 //get tickets by flight id
 export async function getTicketsByFlight(flightId) {
   try {

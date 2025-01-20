@@ -7,6 +7,7 @@ const AddActivity = ({ createActivity }) => {
   const [price, setPrice] = useState("");
   const [location, setLocation] = useState("");
   const [duration, setDuration] = useState("");
+  const [equipment, setEquipment] = useState("");
 
   const isFormFilled = () => activityName && price && location && duration;
 
@@ -14,6 +15,15 @@ const AddActivity = ({ createActivity }) => {
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+    const handlePriceChange = (e) => {
+      const value = e.target.value;
+
+      // Allow only numbers
+      if (/^\d*$/.test(value)) {
+        setPrice(BigInt(value || 0)); // Convert valid input to BigInt
+      }
+    };
 
   return (
     <>
@@ -40,8 +50,8 @@ const AddActivity = ({ createActivity }) => {
                 <Form.Control
                   type="text"
                   placeholder="Price"
-                  value={price}
-                  onChange={(e) => setPrice(e.target.value)}
+                  value={price.toString()}
+                  onChange={handlePriceChange}
                 />
               </FloatingLabel>
             </Form.Group>
@@ -67,6 +77,17 @@ const AddActivity = ({ createActivity }) => {
                 />
               </FloatingLabel>
             </Form.Group>
+
+            <Form.Group className="mb-3" controlId="formBasicEmail">
+              <FloatingLabel controlId="floatingInput" label="Equipment">
+                <Form.Control
+                  type="text"
+                  placeholder="Equipment"
+                  value={equipment}
+                  onChange={(e) => setEquipment(e.target.value)}
+                />
+              </FloatingLabel>
+            </Form.Group>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
@@ -76,9 +97,9 @@ const AddActivity = ({ createActivity }) => {
               variant="primary"
               onClick={() => {
                 if (isFormFilled()) {
-                  createActivity({ activityName, price, location, duration });
+                  createActivity({ activityName, price, location, duration, equipment });
                   handleClose();
-                  console.log({ activityName, price, location, duration });
+                  console.log({ activityName, price, location, duration, equipment });
                 }
               }}
             >

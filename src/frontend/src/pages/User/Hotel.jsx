@@ -18,7 +18,7 @@ const HotelPage = () => {
 
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  const hotelName = params.get("hotelName");
+  const hotelId = params.get("hotelId");
 
     const fetchHotels = async () => {
         try {
@@ -34,8 +34,8 @@ const HotelPage = () => {
 
     const getHotel = async () => {
         try {
-            const data = await getHotels();
-            const hotel = data.find(hotel => hotel.name === hotelName);
+            const hotels = await getHotels();
+            const hotel = hotels.find(hotel => hotel.hotelId === hotelId);
             setHotel(hotel);
         } catch (error) {
             console.log(error);
@@ -45,27 +45,47 @@ const HotelPage = () => {
     useEffect(() => {
         getHotel();
     }
-    , [])
+    , [hotelId]);
 
-
-
-    const triggerBook = async () => {
+//book hotel
+const book = async (booking) => {
     try {
-      await bookHotel(hotel.id);
-      NotificationSuccess("Hotel Booked Successfully");
+        setLoading(true);
+        bookHotel(booking, hotelId).then((resp) => {
+            if (resp) {
+                NotificationSuccess("Hotel booked successfully");
+            } else {
+                NotificationError("Hotel booking failed");
+            }
+            setLoading(false);
+        });
     } catch (error) {
-      NotificationError("Failed to Book Hotel");
-    }
+        console.log(error);
+        setLoading(false);
     }
 
-    
+}
+
+const triggerBook = ({ userName, numberOfRooms, typeOfRoom, duration }) => {
+     book({
+      hotelId: hotel.hotelId,
+        userName,
+        numberOfRooms,
+        typeOfRoom,
+        duration
+    })
+   
+}
+
+
+   
 
   return (
     <>
       {!loading ? (
         <div>
           <h1>Flight</h1>
-          <h1>Name: {hotel.hotelName}</h1>
+          <h1>Name: {hotel.hotelId}</h1>
             <h1>Location: {hotel.location}</h1>
             <h1>Price: {hotel.price}</h1>
             <h1>Available Rooms: {hotel.availableRooms}</h1>

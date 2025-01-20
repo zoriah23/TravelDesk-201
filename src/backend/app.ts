@@ -30,7 +30,7 @@ const Activity = Record({
   activityId: text,
   activityName: text,
   timestamp: nat64,
-  price: text,
+  price: nat,
   location: text,
   duration: text,
   equipment: text,
@@ -42,7 +42,7 @@ type Activity = typeof Activity.tsType;
 
 const ActivityPayload = Record({
   activityName: text,
-  price: text,
+  price: nat,
   location: text,
   duration: text,
   equipment: text,
@@ -58,7 +58,7 @@ const Hotels = Record({
   amenities: text,
   price: nat,
   numberofRooms: nat,
-  rating: nat,
+  rating: Vec(text),
   guests: Vec(text),
   reviews: Vec(text),
 });
@@ -73,7 +73,7 @@ const HotelsPayload = Record({
   amenities: text,
   price: nat,
   numberofRooms: nat,
-  rating: nat,
+  
 });
 
 type HotelsPayload = typeof HotelsPayload.tsType;
@@ -180,7 +180,7 @@ const BookHotel = Record({
   hotelId: text,
   userName: text,
   numberOfRooms: nat,
-  duration: nat,
+  duration: text,
   typeOfRoom: text,
 });
 
@@ -190,7 +190,7 @@ const BookHotelPayload = Record({
   hotelId: text,
   userName: text,
   numberOfRooms: nat,
-  duration: nat,
+  duration: text,
   typeOfRoom: text,
 });
 
@@ -337,12 +337,16 @@ export default Canister({
   }),
 
   //add hotel
-  addHotel: update([HotelsPayload], Result(Vec(Hotels), Message), (payload) => {
-    const hotelId = uuidv4();
-    const hotel = { hotelId, guests: [], reviews: [], ...payload };
-    HotelsStorage.insert(hotelId, hotel);
-    return Ok([hotel]);
-  }),
+  addHotel: update(
+    [HotelsPayload],
+    Result(Hotels, Message),
+    (payload) => {
+      const hotelId = uuidv4();
+      const hotel = { hotelId, guests: [], reviews: [], rating: [], ...payload };
+      HotelsStorage.insert(hotelId, hotel);
+      return Ok(hotel);
+    }
+  ),
 
   //get hotels
   getHotels: query([], Vec(Hotels), () => {
@@ -570,6 +574,12 @@ export default Canister({
   getTicketByFlightId: query([text], Vec(Ticket), (id) => {
     const tickets = TicketStorage.values();
     return tickets.filter((ticket) => ticket.flightId === id);
+  }),
+
+  //get ticket by id
+  getTicketById: query([text], Result(Ticket, Message), (id) => {
+    const ticket = TicketStorage.get(id);
+    return ticket ? Ok(ticket) : Err("Ticket not found");
   }),
 
   //get user at hotel

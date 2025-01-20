@@ -60,10 +60,9 @@ const Activities = () => {
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h1 className="fs-4 fw-bold mb-0">Acc</h1>
          
-          <Link to="/adoptions?canisterId=br5f7-7uaaa-aaaaa-qaaca-cai">
-            {" "}
+         
             <h1>Activities</h1>
-          </Link>
+        
         </div>
 
         <div className=" flex">

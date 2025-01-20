@@ -1,54 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { Card, Col } from "react-bootstrap";
 
-import { useLocation, useNavigate } from "react-router-dom";
-import {getTickets} from "../../../../utils/endpoints";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import {getTicket} from "../../../../utils/endpoints";
 const Ticket = () => {
  
   const location = useLocation();
+    const params = new URLSearchParams(location.search);
+  const ticketId = params.get("ticketId");
   
 
     const [loading, setLoading] = useState(false);
     const [show, setShow] = useState(false);
-    const [tickets, setTickets] = useState([]);
+   // const [tickets, setTickets] = useState([]);
     const [ticket, setTicket] = useState({});
 
-    //fetch tickets
-    const fetchTickets = async () => {
-        try {
-            const tickets = await getTickets();
-            setTickets(tickets);
-            setLoading(false);
-            console.log("tickets", tickets);
-        } catch (error) {
-            setLoading(false);
-            NotificationError("Error", "Failed to fetch tickets");
-        }
-    };
-
-    useEffect(() => {   
-        fetchTickets();
-    }
-    , [fetchTickets]);
-
+    
     //fetch ticket
-    const fetchTicket = async (ticketId) => {
+    const fetchTicket = async () => {
         try {
             setLoading(true);
-            const ticket = await getTickets(ticketId);
-            setTicket(ticket);
+            getTicket(ticketId).then((resp) => {
+                if (resp) {
+                    setTicket(resp);
+                }
+            });
+            console.log("ticket", ticket);
             setLoading(false);
         } catch (error) {
+            console.log(error);
             setLoading(false);
-            NotificationError("Error", "Failed to fetch ticket");
         }
     };
 
     useEffect(() => {
         fetchTicket();
     }
-    , []);
+    , [ticketId]);
 
   return (
     <Col>
@@ -60,6 +49,7 @@ const Ticket = () => {
                 <p> Congratulations </p>
                 <p> You have successfully booked a ticket </p>
                 <p> You can view your ticket details below </p>
+                {ticketId}
 
 
               

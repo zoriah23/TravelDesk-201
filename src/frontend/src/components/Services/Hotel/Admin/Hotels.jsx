@@ -43,19 +43,26 @@ const Hotels = () => {
   , []);
 
   //create hotel
-  const triggerAdd = async (hotel) => {
+  const createHotel = async (hotel) => {
     try {
-      setLoading(true);
-      await addHotel(hotel);
-      NotificationSuccess("Hotel created successfully");
-      fetchHotels();
+     setLoading(true);
+      addHotel(hotel).then((resp) => {
+        if (resp) {
+          NotificationSuccess("Hotel added successfully");
+          fetchHotels();
+        } else {
+          NotificationError("Failed to add hotel");
+        }
+      });
       setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      NotificationError(error);
     }
-  };
+    catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  }
 
+  
     
  
 
@@ -64,7 +71,7 @@ const Hotels = () => {
       <>
         <div className="d-flex justify-content-between align-items-center mb-4">
           <h1 className="fs-4 fw-bold mb-0">Hotels</h1>
-          <AddHotel triggerAdd={triggerAdd} />
+          <AddHotel save={createHotel} />
 
           {/* <Link to="/adoptions?canisterId=br5f7-7uaaa-aaaaa-qaaca-cai">
             {" "}

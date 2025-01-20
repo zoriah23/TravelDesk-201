@@ -79,10 +79,7 @@ const fetchActivities = useCallback(async () => {
              <h1 className="fs-4 fw-bold mb-0">AcTivities</h1>
             <AddActivity createActivity={createActivity} />
 
-            {/* <Link to="/adoptions?canisterId=br5f7-7uaaa-aaaaa-qaaca-cai">
-              {" "}
-              <h1>Activities</h1>
-           </Link> */}
+           
          </div>
 
            <div className=" flex">

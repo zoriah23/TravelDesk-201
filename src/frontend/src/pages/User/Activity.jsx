@@ -20,35 +20,38 @@ const ActivityPage = () => {
 
   const location = useLocation();
   const params = new URLSearchParams(location.search);
-  const activityName = params.get("activityName");
+  const activityId = params.get("activityId");
 
   const fetchActivities = async () => {
     try {
       setLoading(true);
-      const activities = await getActivities();
-      setActivities(data);
+      getActivities().then((resp) => {
+        if (resp) {
+          setActivities(resp);
+        }
+      });
       setLoading(false);
     } catch (error) {
       console.log(error);
       setLoading(false);
     }
-  };
+  }
 
 
   const getActivity = async () => {
     try {
-      const activities = await getActivities();
-      const activity = activities.find(
-        (activity) => activity.name === activityName
-      );
+     const activities = await getActivities();
+      const activity = activities.find((activity) => activity.activityId === activityId);
       setActivity(activity);
-    } catch (error) {
+      console.log("activity", activity);
+    }
+    catch (error) {
       console.log(error);
     }
   };
   useEffect(() => {
     getActivity();
-  }, [activityName]);
+  }, [activityId]);
 
   useEffect(() => {
     fetchActivities();
@@ -60,6 +63,7 @@ const ActivityPage = () => {
       setLoading(true);
       await bookActivity(activityId);
       NotificationSuccess("Activity booked successfully");
+      console.log("Activity booked successfully");
       setLoading(false);
     } catch (error) {
       NotificationError("Error booking activity");
@@ -67,8 +71,8 @@ const ActivityPage = () => {
     }
   };
 
-  const triggerBook = (userName, userPhoneNumber, NumberofPeople ) => {
-    book({ activityId: activity.id,
+  const triggerBook = (userName, date, userPhoneNumber, NumberofPeople ) => {
+    book({ activityId: activityId,
         userName,
         userPhoneNumber,
         date,
@@ -83,6 +87,7 @@ const ActivityPage = () => {
         <div>
           <h1>Activity Info</h1>
           <div>
+            {activityId}
             <h1>Activity Name: {activity.name}</h1>
             <h1>Price: {activity.price}</h1>
             <h1>Location: {activity.location}</h1>
