@@ -16,7 +16,7 @@ const [loading, setLoading] = useState(false);
       {login() ? (
         <div>
           <NavBar />
-          <h1>Manage Services provided</h1>
+          <h1>Manage Services</h1>
           <div className="flex flex-column">
          
        <Flights />
