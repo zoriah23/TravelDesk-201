@@ -1,63 +1,75 @@
 import React, { useState } from "react";
 import PropTypes from "prop-types";
-import { Button, Modal, Form, FloatingLabel } from "react-bootstrap";
+import { Button, Modal, Form, FloatingLabel, Row, Col } from "react-bootstrap";
 
 const AddHotel = ({ save }) => {
- const [name, setName] = useState("");
- const [location, setLocation] = useState("");
- const [ typeOfRoom, setTypeOfRoom] = useState("");
+  const [name, setName] = useState("");
+  const [location, setLocation] = useState("");
+  const [typeOfRoom, setTypeOfRoom] = useState([
+    { roomType: "Single", price: 0, availableRooms: 0 },
+    { roomType: "Double", price: 0, availableRooms: 0 },
+    { roomType: "Suite", price: 0, availableRooms: 0 },
+  ]);
   const [price, setPrice] = useState("");
   const [numberofRooms, setNumberofRooms] = useState("");
   const [description, setDescription] = useState("");
-  const [amenities, setAmenities] = useState("");
-  const [availableRooms, setAvailableRooms] = useState("");
-  
+  const [amenities, setAmenities] = useState([]);
 
-
-  const isFormFilled = () => name && location && typeOfRoom && price && numberofRooms && description && amenities;
+  const isFormFilled = () =>
+    name &&
+    location &&
+    typeOfRoom.length &&
+    price &&
+    numberofRooms &&
+    description &&
+    amenities.length;
 
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-    const handleNumberOfRooms = (e) => {
-      const value = e.target.value;
-
-      // Allow only numbers
-      if (/^\d*$/.test(value)) {
-        setNumberofRooms(BigInt(value || 0)); // Convert valid input to BigInt
-      }
-    };
-
-    const handlePrice = (e) => {
-      const value = e.target.value;
-
-      // Allow only numbers
-      if (/^\d*$/.test(value)) {
-        setPrice(BigInt(value || 0)); // Convert valid input to BigInt
-      }
+  const handleInputChange = (setter) => (e) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setter(BigInt(value || 0));
     }
+  };
 
-    const handleAvailableRooms = (e) => {
-      const value = e.target.value;
+  const handleRoomTypeChange = (index, field, value) => {
+    const updatedTypes = [...typeOfRoom];
+    updatedTypes[index][field] = value;
+    setTypeOfRoom(updatedTypes);
+  };
 
-      // Allow only numbers
-      if (/^\d*$/.test(value)) {
-        setAvailableRooms(BigInt(value || 0)); // Convert valid input to BigInt
-      }
-    }
+  const amenitiesOptions = [
+    "WiFi",
+    "Parking",
+    "Pool",
+    "Gym",
+    "Spa",
+    "Restaurant",
+  ];
+
+  const handleAmenitiesChange = (event) => {
+    const { value, checked } = event.target;
+    setAmenities((prev) =>
+      checked ? [...prev, value] : prev.filter((amenity) => amenity !== value)
+    );
+  };
 
   return (
     <>
-      <Button onClick={handleShow} className=" bg-black text-white ">
-        <i className="bi bi-plus"></i>
-        <span className=" fs-6"> Add Hotel</span>
+      <Button
+        onClick={handleShow}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      >
+        Add Hotel
       </Button>
       <Modal show={show} onHide={handleClose} centered>
         <Form>
-          <Modal.Body>
-            <FloatingLabel controlId="floatingInput" label="Name">
+          <Modal.Body className="space-y-4">
+            <FloatingLabel controlId="hotelName" label="Name">
               <Form.Control
                 type="text"
                 placeholder="Name"
@@ -65,7 +77,7 @@ const AddHotel = ({ save }) => {
                 onChange={(e) => setName(e.target.value)}
               />
             </FloatingLabel>
-            <FloatingLabel controlId="floatingInput" label="Location">
+            <FloatingLabel controlId="hotelLocation" label="Location">
               <Form.Control
                 type="text"
                 placeholder="Location"
@@ -73,31 +85,75 @@ const AddHotel = ({ save }) => {
                 onChange={(e) => setLocation(e.target.value)}
               />
             </FloatingLabel>
-            <FloatingLabel controlId="floatingInput" label="Type of Room">
-              <Form.Control
-                type="text"
-                placeholder="Type of Room"
-                value={typeOfRoom}
-                onChange={(e) => setTypeOfRoom(e.target.value)}
-              />
+            <FloatingLabel controlId="roomTypes">
+              <div className="">
+                {typeOfRoom.map((room, index) => (
+                  <Row key={index} className="mb-3">
+                    <Col>
+                      <Form.Control
+                        type="text"
+                        value={room.roomType}
+                        readOnly
+                      />
+                    </Col>
+                    <Col>
+                      <FloatingLabel
+                        controlId={`price-${index}`}
+                        label={`${room.roomType} Price`}
+                      >
+                        <Form.Control
+                          type="number"
+                          placeholder={`${room.roomType} Price`}
+                          value={room.price}
+                          onChange={(e) =>
+                            handleRoomTypeChange(index, "price", e.target.value)
+                          }
+                          required
+                        />
+                      </FloatingLabel>
+                    </Col>
+
+                    <Col>
+                      <FloatingLabel
+                        controlId={`seats-${index}`}
+                        label={`${room.roomType} Available Rooms`}
+                      >
+                        <Form.Control
+                          type="number"
+                          placeholder={`${room.roomType} Available Rooms`}
+                          value={room.availableRooms}
+                          onChange={(e) =>
+                            handleRoomTypeChange(
+                              index,
+                              "availableRooms",
+                              e.target.value
+                            )
+                          }
+                          required
+                        />
+                      </FloatingLabel>
+                    </Col>
+                  </Row>
+                ))}
+              </div>
             </FloatingLabel>
-            <FloatingLabel controlId="floatingInput" label="Price">
+            <FloatingLabel controlId="hotelPrice" label="Price">
               <Form.Control
                 type="text"
                 placeholder="Price"
                 value={price.toString()}
-                onChange={handlePrice}
+                onChange={handleInputChange(setPrice)}
               />
             </FloatingLabel>
-            <FloatingLabel controlId="floatingInput" label="Number of Rooms">
+            <FloatingLabel controlId="numRooms" label="Number of Rooms">
               <Form.Control
                 type="text"
                 placeholder="Number of Rooms"
                 value={numberofRooms.toString()}
-                onChange={handleNumberOfRooms}
+                onChange={handleInputChange(setNumberofRooms)}
               />
             </FloatingLabel>
-            <FloatingLabel controlId="floatingInput" label="Description">
+            <FloatingLabel controlId="hotelDescription" label="Description">
               <Form.Control
                 type="text"
                 placeholder="Description"
@@ -105,21 +161,20 @@ const AddHotel = ({ save }) => {
                 onChange={(e) => setDescription(e.target.value)}
               />
             </FloatingLabel>
-            <FloatingLabel controlId="floatingInput" label="Amenities">
-              <Form.Control
-                type="text"
-                placeholder="Amenities"
-                value={amenities}
-                onChange={(e) => setAmenities(e.target.value)}
-              />
-            </FloatingLabel>
-            <FloatingLabel controlId="floatingInput" label="Available Rooms">
-              <Form.Control
-                type="text"
-                placeholder="Available Rooms"
-                value={availableRooms.toString()}
-                onChange={handleAvailableRooms}
-              />
+            <FloatingLabel controlId="formBasicEmail" >
+              <Form.Label className="pb-6">Amenities</Form.Label>
+              <div className="">
+                {amenitiesOptions.map((amenity) => (
+                  <Form.Check
+                    key={amenity}
+                    type="checkbox"
+                    label={amenity}
+                    value={amenity}
+                    checked={amenities.includes(amenity)}
+                    onChange={handleAmenitiesChange}
+                  />
+                ))}
+              </div>
             </FloatingLabel>
           </Modal.Body>
           <Modal.Footer>
@@ -130,7 +185,20 @@ const AddHotel = ({ save }) => {
               variant="primary"
               onClick={() => {
                 if (isFormFilled()) {
-                  save({ name, location, typeOfRoom, price, numberofRooms, description, amenities, availableRooms });
+                  save({
+                    name,
+                    location,
+                    typeOfRoom: typeOfRoom.map((room) => ({
+                      [room.roomType]: {
+                        price: parseInt(room.price, 10),
+                        availableRooms: parseInt(room.availableRooms, 10),
+                      },
+                    })),
+                    price,
+                    numberofRooms,
+                    description,
+                    amenities,
+                  });
                   handleClose();
                 }
               }}

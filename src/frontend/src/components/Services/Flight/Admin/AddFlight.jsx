@@ -10,9 +10,9 @@ const AddFlight = ({ save }) => {
   const [arrivalTime, setArrivalTime] = useState("");
   const [basePrice, setBasePrice] = useState("");
   const [flightClass, setFlightClass] = useState([
-    { className: "Economy", price: 0, availableSeats: 0 },
-    { className: "Business", price: 0, availableSeats: 0 },
-    { className: "First", price: 0, availableSeats: 0 },
+    { className: "Economy", price: 0, },
+    { className: "Business", price: 0,  },
+    { className: "First", price: 0,  },
   ]);
   const [totalSeats, setTotalseats] = useState("");
   const [typeOfPlane, setTypeOfPlane] = useState("");
@@ -63,9 +63,11 @@ const AddFlight = ({ save }) => {
 
   return (
     <>
-      <Button onClick={handleShow} className=" bg-black text-white ">
-        <i className="bi bi-plus"></i>
-        <span className=" fs-6"> Add Flight</span>
+      <Button
+        onClick={handleShow}
+        className=" bg-blue-500 hover:bg-blue-700 text-white hover:text-black font-bold py-2 px-4 rounded "
+      >
+        <span > Add Flight</span>
       </Button>
       <Modal show={show} onHide={handleClose} centered>
         <Form>
@@ -149,16 +151,13 @@ const AddFlight = ({ save }) => {
                         placeholder={`${cls.className} Price`}
                         value={cls.price}
                         onChange={(e) =>
-                          handleFlightClassChange(
-                            index,
-                            "price",
-                            e.target.value
-                          )
+                          handleFlightClassChange(index, "price", e.target.value)
                         }
                         required
                       />
                     </FloatingLabel>
                   </Col>
+                
                   <Col>
                     <FloatingLabel
                       controlId={`seats-${index}`}

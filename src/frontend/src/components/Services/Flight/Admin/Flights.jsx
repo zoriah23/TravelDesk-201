@@ -29,6 +29,7 @@ const Flights = () => {
             }
           }
           );
+          console.log("flights", flights);
           setLoading(false);
 
         } catch (error) {
@@ -76,22 +77,26 @@ const Flights = () => {
     <>
       {!loading ? (
         <>
-          <div className=" relative w-full">
-            <h1 className="fs-4 fw-bold mb-0">Flights</h1>
-            <div className="absolute top-2 right-2">
-              <AddFlight save={createFlight} />
+          <div className="relative w-full p-4 bg-white shadow-md rounded-lg">
+            {/* Header */}
+            <div className="flex justify-between items-center mb-4">
+              <h1 className="text-xl font-bold text-gray-800">Flights</h1>
+              <div>
+                <AddFlight save={createFlight} />
+              </div>
             </div>
 
-            <div className=" flex space-x-2">
-              <Row  className="">
-                {loading ? (
+            {/* Flight Cards */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {loading ? (
+                <div className="col-span-full flex justify-center items-center h-20">
                   <Loader />
-                ) : (
-                  flights.map((flight) => (
-                    <Flight key={flight.id} flight={flight} />
-                  ))
-                )}
-              </Row>
+                </div>
+              ) : (
+                flights.map((flight) => (
+                  <Flight key={flight.id} flight={flight} />
+                ))
+              )}
             </div>
           </div>
         </>

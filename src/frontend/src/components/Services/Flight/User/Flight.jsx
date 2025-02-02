@@ -9,7 +9,6 @@ const Flight = ({ flight }) => {
     flightId,
     departure,
     destination,
-    price,
     airline,
     departureTime,
     arrivalTime,
@@ -20,36 +19,23 @@ const Flight = ({ flight }) => {
   const servicePrincipal = window.auth.principalText;
 
   return (
-    <Col>
+    <Col className="p-4">
       <Card
-        className="w-[250px] h-[200px]"
+        className="w-64 h-56 shadow-lg rounded-lg transition-transform transform hover:scale-105 cursor-pointer"
         onClick={() =>
           navigate(
             `/flightInfo?canisterId=bd3sg-teaaa-aaaaa-qaaba-cai&flightId=${flightId}`
           )
         }
       >
-        <Card.Body>
-          <Card.Text>
-            <p>
-              <strong>Airline:</strong> {airline}
-            </p>
-            <p>
-              <strong>Departure:</strong> {departure}
-            </p>
-            <p>
-              <strong>Destination:</strong> {destination}
-            </p>
-
-            <p>
-              <strong>Departure Time:</strong> {departureTime}
-            </p>
-            <p>
-              <strong>Arrival Time:</strong> {arrivalTime}
-            </p>
-            <p>
-              <strong>Price:</strong> ${price}
-            </p>
+        <Card.Body className="text-center">
+          <Card.Title className="text-lg font-bold text-gray-800">
+            {departure} ➝ {destination}
+          </Card.Title>
+          <Card.Text className="text-gray-600 space-y-2">
+            <p className="font-medium">Airline: {airline}</p>
+            <p className="text-sm">Departure: {departureTime}</p>
+            <p className="text-sm">Arrival: {arrivalTime}</p>
           </Card.Text>
         </Card.Body>
       </Card>

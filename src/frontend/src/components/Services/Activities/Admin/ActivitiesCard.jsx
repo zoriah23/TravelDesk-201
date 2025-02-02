@@ -5,7 +5,7 @@ import { Card, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 const Activity = ({ activity }) => {
-  const { activityId, activityName, price, location, duration, equipment, participants } = activity;
+  const { activityId, activityName, price, location } = activity;
   const navigate = useNavigate();
 
   const servicePrincipal = window.auth.principalText;
@@ -13,22 +13,21 @@ const Activity = ({ activity }) => {
   return (
     <Col>
       <Card
-        className=" w-[250px] h-[150px] m-4"
+        className="h-full shadow-md bg-white rounded-lg text-gray-800 px-4 py-3 transition-transform duration-200 hover:shadow-lg hover:bg-gray-100 cursor-pointer"
         onClick={() =>
           navigate(
-            `/activityDetails?canisterId=br5f7-7uaaa-aaaaa-qaaca-cai&activityName=${activityName}`
+            `/activityDetails?canisterId=bd3sg-teaaa-aaaaa-qaaba-cai&activityId=${activityId}`
           )
         }
       >
         <Card.Body>
-          <Card.Title>{activityName}</Card.Title>
-          <Card.Text>
-            <p>Price: {price}</p>
-            <p>Location: {location}</p>
-            <p>Duration: {duration}</p>
-            <p>Equipment: {equipment}</p>
-            <p>Participants: {participants}</p>
-          </Card.Text>
+          <Card.Title className="text-lg font-semibold">{activityName}</Card.Title>
+          <Card.Subtitle className="mb-2 text-gray-600 text-sm">
+            {location}
+          </Card.Subtitle>
+          <Card.Text className="text-gray-500 text-sm">
+            <span className="font-medium">Price:</span> {price}
+        </Card.Text>
         </Card.Body>
       </Card>
     </Col>
@@ -36,8 +35,7 @@ const Activity = ({ activity }) => {
 };
 
 Activity.propTypes = {
-    activity: PropTypes.object.isRequired,
+  activity: PropTypes.object.isRequired,
 };
-
 
 export default Activity;

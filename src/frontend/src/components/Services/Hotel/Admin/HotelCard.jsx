@@ -5,7 +5,12 @@ import { Card, Col } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 
 const Hotel = ({ hotel }) => {
-  const { hotelId, name, location, typeOfRoom, price, numberofRooms, rating, description, amenities, availableRooms } = hotel;
+  const {
+    hotelId,
+    name,
+    location,
+    rating,
+  } = hotel;
   const navigate = useNavigate();
 
   const servicePrincipal = window.auth.principalText;
@@ -13,21 +18,21 @@ const Hotel = ({ hotel }) => {
   return (
     <Col>
       <Card
-        className="w-[200px] h-[300px] m-4"
+        className="h-full shadow-md bg-white rounded-lg text-gray-800 px-4 py-3 transition-transform duration-200 hover:shadow-lg hover:bg-gray-100 cursor-pointer"
         onClick={() =>
-          navigate(`/hotelDetails?canisterId=br5f7-7uaaa-aaaaa-qaaca-cai&hotelName=${hotelName}`)
+          navigate(
+            `/hotelDetails?canisterId=bd3sg-teaaa-aaaaa-qaaba-cai&hotelId=${hotelId}`
+          )
         }
       >
         <Card.Body>
-          <Card.Title>Name: {name}</Card.Title>
-          <Card.Text>Location: {location}</Card.Text>
-          <Card.Text>Type of Room: {typeOfRoom}</Card.Text>
-          <Card.Text>Price: {price}</Card.Text>
-          <Card.Text>Number of Rooms: {numberofRooms}</Card.Text>
-          <Card.Text>Rating: {rating}</Card.Text>
-          <Card.Text>Description: {description}</Card.Text>
-          <Card.Text>Amenities: {amenities}</Card.Text>
-          <Card.Text>Available Rooms: {availableRooms}</Card.Text>
+          <Card.Title className="text-lg font-semibold">{name}</Card.Title>
+          <Card.Subtitle className="mb-2 text-gray-600 text-sm">
+            {location}
+          </Card.Subtitle>
+          <Card.Text className="text-gray-500 text-sm">
+            <span className="font-medium">Rating:</span> {rating}
+          </Card.Text>
         </Card.Body>
       </Card>
     </Col>
@@ -35,8 +40,7 @@ const Hotel = ({ hotel }) => {
 };
 
 Hotel.propTypes = {
-    hotel: PropTypes.object.isRequired,
-    };
-
+  hotel: PropTypes.object.isRequired,
+};
 
 export default Hotel;

@@ -66,7 +66,7 @@ const FlightPage = () => {
       console.log(error);
       setLoading(false);
     }
-  }
+  };
   const triggerBook = ({ userName, numberOfSeats, flightClass }) => {
     const ticket = {
       userName,
@@ -75,47 +75,70 @@ const FlightPage = () => {
     };
     book(ticket, flightId);
     console.log("ticket", ticket);
-  }
-
+  };
 
   return (
-    <>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       {!loading ? (
-        <div>
-          <h1>Flight</h1>
-          <h1>{flight.departure}</h1>
-          <h1>{flight.destination}</h1>
-          <h1>{flight.price}</h1>
-          <h1>{flight.airline}</h1>
-          <h1>{flight.departureTime}</h1>
-          <h1>{flight.arrivalTime}</h1>
-          <h1>{flightId}</h1>
-
-          <h1>{flight.totalSeats}</h1>
-          <h1>{flight.typeOfPlane}</h1>
-          <h1>{flight.flightType}</h1>
-          <strong>Flight Classes:</strong>
-          <ul>
-            {flight.flightClass?.map((classItem, index) => {
-              const [className, classDetails] = Object.entries(classItem)[0]; // Extract key and value
-              return (
-                <li key={index}>
-                  <h3>{className}</h3>
-                  <p>Price: {classDetails.price.toString()}</p>
-                  <p>
-                    Available Seats: {classDetails.availableSeats.toString()}
-                  </p>
-                </li>
-              );
-            })}
-          </ul>
-
-          <BookFlight book={triggerBook} />
+        <div className="bg-white p-6 shadow-lg rounded-lg w-full max-w-lg">
+          <h1 className="text-3xl font-bold text-center mb-4">
+            Flight Details
+          </h1>
+          <div className="space-y-2">
+            <p className="text-gray-700">
+              <strong>Flight ID:</strong> {flightId}
+            </p>
+            <h1 className="text-xl font-semibold">
+              <strong>Airline:</strong> {flight.airline}
+            </h1>
+            <h1 className="text-xl font-semibold">
+              <strong>Price:</strong> {flight.price}
+            </h1>
+            <p className="text-xl font-semibold">
+              <strong>Departure:</strong> {flight.departure} -{" "}
+              <strong>Arrival:</strong>
+              {flight.destination}
+            </p>
+            <p className="text-gray-600">
+              <strong>Date:</strong> - {flight.arrivalTime} -{" "}
+              {flight.departureTime}
+            </p>
+            <div className="mt-4">
+              <strong className="text-gray-700">Flight Classes:</strong>
+              <ul className="list-disc list-inside mt-2">
+                {flight.flightClass?.map((cls, index) => {
+                  const [className, details] = Object.entries(cls)[0];
+                  return (
+                    <li key={index} className="text-gray-600">
+                      <strong className="text-gray-700">{className}:</strong>{" "}
+                      Seats: {details.availableSeats.toString()}, Price:{" "}
+                      <span className="text-green-600 font-medium">
+                        ${details.price.toString()}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </div>
+          <div className="mt-4 flex flex-col space-y-3">
+            <BookFlight book={triggerBook} />
+            <button
+              onClick={() =>
+                navigate(
+                  `/activityCard?canisterId=bd3sg-teaaa-aaaaa-qaaba-cai&activityCardId=${activityCardId}`
+                )
+              }
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            >
+              View Card
+            </button>
+          </div>
         </div>
       ) : (
-        <h1>Loading...</h1>
+        <h1 className="text-2xl font-semibold text-gray-700">Loading...</h1>
       )}
-    </>
+    </div>
   );
 };
 

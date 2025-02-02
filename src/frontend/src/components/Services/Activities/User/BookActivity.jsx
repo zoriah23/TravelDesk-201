@@ -3,18 +3,29 @@ import PropTypes from "prop-types";
 import { Button, Modal, Form, FloatingLabel } from "react-bootstrap";
 import { useNavigate } from "react-router";
 
-const BookActivity = ({ book}) => {
- const [UserName, setUserName] = useState("");
-    const [UserPhoneNumber, setUserPhoneNumber] = useState("");
-    const [date, setDate] = useState("");
-    const [numberOfPeople, setNumberOfPeople] = useState("");
+const BookActivity = ({ book }) => {
+  const [userName, setUserName] = useState("");
+  const [userPhoneNumber, setUserPhoneNumber] = useState("");
+  const [date, setDate] = useState("");
+  const [numberOfPeople, setNumberOfPeople] = useState("");
 
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
 
-  const isFormFilled = () => UserName && UserPhoneNumber && date && numberOfPeople;
+  const isFormFilled = () =>
+    userName && userPhoneNumber && date && numberOfPeople;
+
+  const handleNumberOfPeopleChange = (e) => {
+    const value = e.target.value;
+
+    // Allow only numbers
+    if (/^\d*$/.test(value)) {
+      setNumberOfPeople(parseInt(value || 0)); // Convert valid input to BigInt
+    }
+  };
+
 
 
   return (
@@ -36,7 +47,7 @@ const BookActivity = ({ book}) => {
                 <Form.Control
                   type="text"
                   placeholder="Name"
-                  value={UserName}
+                  value={userName}
                   onChange={(e) => setUserName(e.target.value)}
                 />
               </FloatingLabel>
@@ -47,7 +58,7 @@ const BookActivity = ({ book}) => {
                 <Form.Control
                   type="text"
                   placeholder="Phone Number"
-                  value={UserPhoneNumber}
+                  value={userPhoneNumber.toString()}
                   onChange={(e) => setUserPhoneNumber(e.target.value)}
                 />
               </FloatingLabel>
@@ -69,8 +80,8 @@ const BookActivity = ({ book}) => {
                 <Form.Control
                   type="number"
                   placeholder="Number of People"
-                  value={numberOfPeople}
-                  onChange={(e) => setNumberOfPeople(e.target.value)}
+                  value={numberOfPeople.toString()}
+                  onChange={handleNumberOfPeopleChange}
                 />
               </FloatingLabel>
             </Form.Group>
@@ -84,16 +95,15 @@ const BookActivity = ({ book}) => {
               disabled={!isFormFilled()}
               onClick={() => {
                 book({
-                  UserName,
-                  UserPhoneNumber,
+                  userName,
+                  userPhoneNumber,
                   date,
                   numberOfPeople,
                 });
                 handleClose();
-               
               }}
             >
-            Book
+              Book
             </Button>
           </Modal.Footer>
         </Form>
@@ -103,7 +113,7 @@ const BookActivity = ({ book}) => {
 };
 
 BookActivity.propTypes = {
-    book: PropTypes.func.isRequired,
-    };
+  book: PropTypes.func.isRequired,
+};
 
 export default BookActivity;

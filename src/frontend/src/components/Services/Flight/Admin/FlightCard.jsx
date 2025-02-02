@@ -8,14 +8,9 @@ const Flight = ({ flight }) => {
     flightId,
     departure,
     destination,
-    basePrice,
-    flightClass,
+   
     totalSeats,
     airline,
-    departureTime,
-    arrivalTime,
-    typeOfPlane,
-    flightType,
   } = flight;
 
   const navigate = useNavigate();
@@ -23,7 +18,7 @@ const Flight = ({ flight }) => {
   return (
     <Col>
       <Card
-        className="w-[300px] h-[400px]"
+        className="h-full shadow-md bg-white rounded-lg text-gray-800 px-4 py-3 transition-transform duration-200 hover:shadow-lg hover:bg-gray-100 cursor-pointer"
         onClick={() =>
           navigate(
             `/flightDetails?canisterId=bd3sg-teaaa-aaaaa-qaaba-cai&flightId=${flightId}`
@@ -31,51 +26,12 @@ const Flight = ({ flight }) => {
         }
       >
         <Card.Body>
-          <Card.Text>
-            <p>
-              <strong>Flight ID:</strong> {flightId}
-            </p>
-            <p>
-              <strong>Departure:</strong> {departure}
-            </p>
-            <p>
-              <strong>Destination:</strong> {destination}
-            </p>
-            <p>
-              <strong>Airline:</strong> {airline}
-            </p>
-            <p>
-              <strong>Departure Time:</strong> {departureTime}
-            </p>
-            <p>
-              <strong>Arrival Time:</strong> {arrivalTime}
-            </p>
-            <p>
-              <strong>Price:</strong> ${basePrice}
-            </p>
-            <p>
-              <strong>Total Seats:</strong> {totalSeats}
-            </p>
-            <p>
-              <strong>Type of Plane:</strong> {typeOfPlane}
-            </p>
-            <p>
-              <strong>Flight Type:</strong> {flightType}
-            </p>
-
-            {/* Render Flight Classes */}
-            <strong>Flight Classes:</strong>
-            <ul>
-              {flightClass.map((cls, index) => {
-                const [className, details] = Object.entries(cls)[0];
-                return (
-                  <li key={index}>
-                    <strong>{className}:</strong> Seats:{" "}
-                    {details.availableSeats}, Price: ${details.price}
-                  </li>
-                );
-              })}
-            </ul>
+          <Card.Title className="text-lg font-semibold">{airline}</Card.Title>
+          <Card.Subtitle className="mb-2 text-gray-600 text-sm">
+            {departure} → {destination}
+          </Card.Subtitle>
+          <Card.Text className="text-gray-500 text-sm">
+            <span className="font-medium">Total Seats:</span> {totalSeats}
           </Card.Text>
         </Card.Body>
       </Card>

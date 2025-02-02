@@ -48,32 +48,28 @@ const Flights = () => {
   }, []);
 
   return (
-    <>
-      <>
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h1 className="fs-4 fw-bold mb-0">Flights</h1>
-
-          {/* <Link to="/adoptions?canisterId=br5f7-7uaaa-aaaaa-qaaca-cai">
-            {" "}
-            <h1>Activities</h1>
-          </Link> */}
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
+        <div className="flex justify-between items-center border-b pb-4 mb-6">
+          <h1 className="text-3xl font-bold text-blue-800">Flights</h1>
         </div>
-
-        <div className=" flex">
-          <Row  className="">
-            {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {loading ? (
+            <div className="col-span-full flex justify-center">
               <Loader />
-            ) : flights.length ? (
-              flights.map((flight) => (
-                <Flight key={flight.id} flight={flight} />
-              ))
-            ) : (
-              <h1>No Flights</h1>
-            )}
-          </Row>
+            </div>
+          ) : flights.length ? (
+            flights.map((flight) => (
+              <Flight key={flight.flightId} flight={flight} />
+            ))
+          ) : (
+            <p className="text-center text-gray-600 col-span-full">
+              No flights available
+            </p>
+          )}
         </div>
-      </>
-    </>
+      </div>
+    </div>
   );
 };
 

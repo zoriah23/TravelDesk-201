@@ -5,10 +5,13 @@ import { Button, Modal, Form, FloatingLabel } from "react-bootstrap";
 const BookHotel = ({ book }) => {
   const [userName, setUserName] = useState("");
   const [numberOfRooms, setNumberOfRooms] = useState("");
-  const [typeOfRoom, setTypeOfRoom] = useState("");
+  const [userPhoneNumber, setUserPhoneNumber] = useState("");
   const [duration, setDuration] = useState("");
+  const [date, setDate] = useState("");
+  const [typeOfRoom, setTypeOfRoom] = useState("");
 
-  const isFormFilled = () => userName && numberOfRooms && typeOfRoom && duration;
+  const isFormFilled = () =>
+    userName && numberOfRooms && duration && date && userPhoneNumber;
 
   const [show, setShow] = useState(false);
 
@@ -22,17 +25,19 @@ const BookHotel = ({ book }) => {
     if (/^\d*$/.test(value)) {
       setNumberOfRooms(BigInt(value || 0)); // Convert valid input to BigInt
     }
-  }
+  };
 
   return (
     <>
-      <Button onClick={handleShow} className=" bg-black text-white ">
-        <i className="bi bi-plus"></i>
-        <span className=" fs-6"> Book Hotel</span>
+      <Button
+        onClick={handleShow}
+        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+      >
+        Book Hotel
       </Button>
       <Modal show={show} onHide={handleClose} centered>
         <Form>
-          <h1>Book Hotel</h1>
+          <Modal.Title>Book Hotel</Modal.Title>
           <Modal.Body>
             <FloatingLabel controlId="floatingInput" label="User Name">
               <Form.Control
@@ -40,6 +45,14 @@ const BookHotel = ({ book }) => {
                 placeholder="User Name"
                 value={userName}
                 onChange={(e) => setUserName(e.target.value)}
+              />
+            </FloatingLabel>
+            <FloatingLabel controlId="floatingInput" label="User Phone Number">
+              <Form.Control
+                type="text"
+                placeholder="User Phone Number"
+                value={userPhoneNumber}
+                onChange={(e) => setUserPhoneNumber(e.target.value)}
               />
             </FloatingLabel>
             <FloatingLabel controlId="floatingInput" label="Number of Rooms">
@@ -50,12 +63,12 @@ const BookHotel = ({ book }) => {
                 onChange={handleNumberOfRooms}
               />
             </FloatingLabel>
-            <FloatingLabel controlId="floatingInput" label="Room Type">
+            <FloatingLabel controlId="floatingInput" label="Date">
               <Form.Control
-                type="text"
-                placeholder="Room Type"
-                value={typeOfRoom}
-                onChange={(e) => setTypeOfRoom(e.target.value)}
+                type="date"
+                placeholder="Date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
               />
             </FloatingLabel>
             <FloatingLabel controlId="floatingInput" label="Duration">
@@ -66,6 +79,17 @@ const BookHotel = ({ book }) => {
                 onChange={(e) => setDuration(e.target.value)}
               />
             </FloatingLabel>
+            <FloatingLabel controlId="floatingInput" label="Type of Room">
+              <Form.Select
+                aria-label="Type of Room"
+                value={typeOfRoom}
+                onChange={(e) => setTypeOfRoom(e.target.value)}
+              >
+                <option value="single">Single</option>
+                <option value="double">Double</option>
+                <option value="suite">Suite</option>
+              </Form.Select>
+            </FloatingLabel>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
@@ -75,7 +99,14 @@ const BookHotel = ({ book }) => {
               variant="primary"
               onClick={() => {
                 if (isFormFilled()) {
-                  book({ userName, numberOfRooms, typeOfRoom, duration });
+                  book({
+                    userName,
+                    userPhoneNumber,
+                    numberOfRooms,
+                    duration,
+                    date,
+                    typeOfRoom,
+                  });
                   handleClose();
                 }
               }}
@@ -90,6 +121,6 @@ const BookHotel = ({ book }) => {
 };
 
 BookHotel.propTypes = {
-    book: PropTypes.func.isRequired,
-    };  
-    export default BookHotel;
+  book: PropTypes.func.isRequired,
+};
+export default BookHotel;

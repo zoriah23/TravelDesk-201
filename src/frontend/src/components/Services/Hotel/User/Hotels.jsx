@@ -48,32 +48,28 @@ const Hotels = () => {
     [])
 
   return (
-    <>
-      <>
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <h1 className="fs-4 fw-bold mb-0">Hotelss</h1>
-
-          {/* <Link to="/adoptions?canisterId=br5f7-7uaaa-aaaaa-qaaca-cai">
-            {" "}
-            <h1>Activities</h1>
-          </Link> */}
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="max-w-6xl mx-auto bg-white shadow-lg rounded-lg p-6">
+        <div className="flex justify-between items-center border-b pb-4 mb-6">
+          <h1 className="text-3xl font-bold text-blue-800">Hotels</h1>
         </div>
-
-        <div className=" flex">
-          <Row xs={1} sm={2} lg={3} className="">
-            {loading ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {loading ? (
+            <div className="col-span-full flex justify-center">
               <Loader />
-            ) : hotels.length ? (
-              hotels.map((hotel) => (
-                <Hotel key={hotel.id} hotel={hotel} />
-              ))
-            ) : (
-              <h1>No hotels available</h1>
-            )}
-          </Row>
+            </div>
+          ) : hotels.length ? (
+            hotels.map((hotel) => (
+              <Hotel key={hotel.id} hotel={hotel} />
+            ))
+          ) : (
+            <p className="text-center text-gray-600 col-span-full">
+              No hotels available
+            </p>
+          )}
         </div>
-      </>
-    </>
+      </div>
+    </div>
   );
 };
 

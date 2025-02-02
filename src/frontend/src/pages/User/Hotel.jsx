@@ -48,7 +48,7 @@ const HotelPage = () => {
     , [hotelId]);
 
 //book hotel
-const book = async (booking) => {
+const book = async (booking, hotelId) => {
     try {
         setLoading(true);
         bookHotel(booking, hotelId).then((resp) => {
@@ -66,40 +66,83 @@ const book = async (booking) => {
 
 }
 
-const triggerBook = ({ userName, numberOfRooms, typeOfRoom, duration }) => {
-     book({
-      hotelId: hotel.hotelId,
-        userName,
-        numberOfRooms,
-        typeOfRoom,
-        duration
-    })
-   
+
+
+const triggerBook = ({userName, userPhoneNumber, date, duration, numberOfRooms, typeOfRoom}) => {
+  const booking = {
+    userName,
+    userPhoneNumber,
+    date,
+    duration,
+    numberOfRooms,
+    typeOfRoom
+  };
+
+  book(booking, hotelId);
 }
 
 
    
 
   return (
-    <>
+    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
       {!loading ? (
-        <div>
-          <h1>Flight</h1>
-          <h1>Name: {hotel.hotelId}</h1>
-            <h1>Location: {hotel.location}</h1>
-            <h1>Price: {hotel.price}</h1>
-            <h1>Available Rooms: {hotel.availableRooms}</h1>
-            <h1>Rating: {hotel.rating}</h1>
-            <h1>Duration: {hotel.duration}</h1>
-            <h1>Room Type: {hotel.roomType}</h1>
-           
-           
-          <BookHotel book={triggerBook} />
+        <div className="bg-white p-6 shadow-lg rounded-lg w-full max-w-lg">
+          <h1 className="text-3xl font-bold text-center mb-4">Hotel Info</h1>
+          <div className="space-y-2">
+            <p className="text-gray-700">Hotel ID: {hotelId}</p>
+            <h1 className="text-xl font-semibold">Hotel Name: {hotel.name}</h1>
+            <h1 className="text-xl font-semibold">
+              Location: {hotel.location}
+            </h1>
+            <div className="mt-4">
+              <p>
+                <strong>Availale Rooms:</strong>
+                <ul className="list-disc list-inside">
+                  {hotel.typeOfRoom?.map((cls, index) => {
+                    const [roomType, details] = Object.entries(cls)[0];
+                    return (
+                      <li key={index} className="text-gray-600">
+                        <strong className="text-gray-700">{roomType}:</strong>{" "}
+                        Rooms: {details.availableRooms.toString()}, Price:{" "}
+                        <span className="text-green-600 font-medium">
+                          ${details.price.toString()}
+                        </span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </p>
+              <p>
+                <strong>Amenities</strong>
+                <ul className="list-disc list-inside">
+                  {hotel.amenities?.map((amenity, index) => (
+                    <li key={index} className="text-gray-600">
+                      {amenity}
+                    </li>
+                  ))}
+                </ul>
+              </p>
+            </div>
+          </div>
+          <div className="mt-4 flex flex-col space-y-3">
+            <BookHotel book={triggerBook} />
+            <button
+              onClick={() =>
+                navigate(
+                  `/hotelCard?canisterId=bd3sg-teaaa-aaaaa-qaaba-cai&hotelCardId=${hotelCardId}`
+                )
+              }
+              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+            >
+              View Card
+            </button>
+          </div>
         </div>
       ) : (
-        <h1>Loading...</h1>
+        <h1 className="text-2xl font-semibold text-gray-700">Loading...</h1>
       )}
-    </>
+    </div>
   );
 };
 

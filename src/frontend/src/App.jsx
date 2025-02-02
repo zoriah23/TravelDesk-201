@@ -14,6 +14,7 @@ import ActivityList from "./components/Services/Activities/Admin/List";
 import HotelList from "./components/Services/Hotel/Admin/List";
 import FlightsList from "./components/Services/Flight/Admin/List";
 import Ticket from "./components/Services/Flight/User/Ticket";
+import ActivityCard from "./components/Services/Activities/User/ActivityCard";
 
 const App = function AppWrapper() {
   return (
@@ -28,6 +29,7 @@ const App = function AppWrapper() {
         <Route path="/flightInfo" element={<FlightPage />} />
         <Route path="/hotelInfo" element={<HotelPage />} />
         <Route path="/activityInfo" element={<ActivityPage />} />
+        <Route path="/activityCard" element={<ActivityCard />} />
         <Route path="/activityDetails" element={<ActivityList />} />
         <Route path="/hotelDetails" element={<HotelList />} />
         <Route path="/flightDetails" element={<FlightsList />} />

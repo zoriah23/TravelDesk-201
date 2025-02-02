@@ -5,8 +5,8 @@ export async function addActivity(activity) {
 }
 
 //book activity
-export async function bookActivity(activityId) {
-  return window.canister.TravelDesk.bookActivity(activityId);
+export async function bookActivity(activityId, activityCard) {
+  return window.canister.TravelDeskApi.bookActivity(activityId, activityCard);
 }
 
 //get all activities
@@ -41,7 +41,31 @@ export async function getActivitiesByLocation(location) {
     return [];
   }
 }
+//get activity cards
+export async function getActivityCards() {
+  try {
+    return await window.canister.TravelDeskApi.getActivityCards();
+  } catch (err) {
+    if (err.name === "AgentHTTPResponseError") {
+      const authClient = window.auth.client;
+      await authClient.logout();
+    }
+    return [];
+  }
+}
 
+//get activity card for an activity
+export async function getActivityCard(adoptionCardId) {
+  try {
+    return await window.canister.TravelDeskApi.getActivityCard(adoptionCardId);
+  } catch (err) {
+    if (err.name === "AgentHTTPResponseError") {
+      const authClient = window.auth.client;
+      await authClient.logout();
+    }
+    return [];
+  }
+}
 
 //hotels
 //add hotel
@@ -50,8 +74,8 @@ export async function addHotel(hotel) {
 }
 
 //book hotel
-export async function bookHotel(hotelId) {
-  return window.canister.TravelDeskApi.bookHotel(hotelId);
+export async function bookHotel(hotelId, booking) {
+  return window.canister.TravelDeskApi.bookHotel(hotelId, booking);
 }
 
 //get all hotels
@@ -80,11 +104,25 @@ export async function getHotel(hotelId) {
     return [];
   }
 }
-export async function getHotelList(hotelId) {
+
+//get hotel cards
+export async function getHotelCards() {
   try {
-    return await window.canister.TravelDeskApi.getHotel(hotelId);
+    return await window.canister.TravelDeskApi.getHotelCards();
+  } catch (err) {
+    if (err.name === "AgentHTTPResponseError") {
+      const authClient = window.auth.client;
+      await authClient.logout();
+    }
+    return [];
   }
-  catch (err) {
+}
+
+ //get hotel card for a hotel
+export async function getHotelCard(hotelCardId) {
+  try {
+    return await window.canister.TravelDeskApi.getHotelCard(hotelCardId);
+  } catch (err) {
     if (err.name === "AgentHTTPResponseError") {
       const authClient = window.auth.client;
       await authClient.logout();
@@ -145,11 +183,13 @@ export async function getFlight(flightId) {
     return [];
   }
 }
+
+
+//get tickets
 export async function getTickets() {
   try {
-    return await window.canister.TravelDeskAPi.getFlight();
-  }
-  catch (err) {
+    return await window.canister.TravelDeskApi.getTickets();
+  } catch (err) {
     if (err.name === "AgentHTTPResponseError") {
       const authClient = window.auth.client;
       await authClient.logout();
@@ -175,9 +215,13 @@ export async function getTicket(ticketId) {
 //get tickets by flight id
 export async function getTicketsByFlight(flightId) {
   try {
-    return await window.canister.TravelDeskAPi.getTicketsByFlight(flightId);
-  }
-  catch (err) {
+    const tickets = await window.canister.TravelDeskAPi.getTicketsByFlight(
+      flightId
+    );
+    console.log("Fetched tickets:", tickets); // Debugging line
+    return tickets;
+  } catch (err) {
+    console.error("Error fetching tickets:", err); // Log error
     if (err.name === "AgentHTTPResponseError") {
       const authClient = window.auth.client;
       await authClient.logout();
@@ -185,6 +229,9 @@ export async function getTicketsByFlight(flightId) {
     return [];
   }
 }
+
+
+
 
 //get flights by location
 export async function getFlightsByLocation(location) {

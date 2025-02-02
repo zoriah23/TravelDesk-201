@@ -30,9 +30,11 @@ const BookFlight = ({ book }) => {
 
   return (
     <>
-      <Button onClick={handleShow} className=" bg-black text-white ">
-        <i className="bi bi-plus"></i>
-        <span className=" fs-6"> Book Flight</span>
+      <Button
+        onClick={handleShow}
+        className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+      >
+        <span> Book Flight</span>
       </Button>
       <Modal show={show} onHide={handleClose} centered>
         <Form>

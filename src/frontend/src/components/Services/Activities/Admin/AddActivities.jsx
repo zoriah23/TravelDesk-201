@@ -27,9 +27,11 @@ const AddActivity = ({ createActivity }) => {
 
   return (
     <>
-      <Button onClick={handleShow} className=" bg-black text-white ">
-        <i className="bi bi-plus"></i>
-        <span className=" fs-6"> Add Activity</span>
+      <Button
+        onClick={handleShow}
+        className=" bg-blue-500 hover:bg-blue-700 text-white hover:text-black font-bold py-2 px-4 rounded "
+      >
+        <span className=""> Add Activity</span>
       </Button>
       <Modal show={show} onHide={handleClose} centered>
         <Form>
@@ -97,9 +99,21 @@ const AddActivity = ({ createActivity }) => {
               variant="primary"
               onClick={() => {
                 if (isFormFilled()) {
-                  createActivity({ activityName, price, location, duration, equipment });
+                  createActivity({
+                    activityName,
+                    price,
+                    location,
+                    duration,
+                    equipment,
+                  });
                   handleClose();
-                  console.log({ activityName, price, location, duration, equipment });
+                  console.log({
+                    activityName,
+                    price,
+                    location,
+                    duration,
+                    equipment,
+                  });
                 }
               }}
             >

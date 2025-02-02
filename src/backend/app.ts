@@ -24,7 +24,7 @@ import {
   // Duration
 } from "azle/experimental";
 import { v4 as uuidv4 } from "uuid";
-import { bookFlight } from "../frontend/src/utils/endpoints";
+
 
 const Activity = Record({
   activityId: text,
@@ -49,13 +49,29 @@ const ActivityPayload = Record({
 });
 type ActivityPayload = typeof ActivityPayload.tsType;
 
+const TypeOfRoom = Variant({
+  Single: Record({
+    price: nat,
+    availableRooms: nat,
+  }),
+  Double: Record({
+    price: nat,
+    availableRooms: nat,
+  }),
+  Suite: Record({
+    price: nat,
+    availableRooms: nat,
+  }),
+});
+
+type TypeOfRoom = typeof TypeOfRoom.tsType;
+
 const Hotels = Record({
   hotelId: text,
   name: text,
   location: text,
-  typeOfRoom: text,
-  availableRooms: nat,
-  amenities: text,
+  typeOfRoom: Vec(TypeOfRoom),
+  amenities: Vec(text),
   price: nat,
   numberofRooms: nat,
   rating: Vec(text),
@@ -68,9 +84,8 @@ type Hotels = typeof Hotels.tsType;
 const HotelsPayload = Record({
   name: text,
   location: text,
-  typeOfRoom: text,
-  availableRooms: nat,
-  amenities: text,
+  typeOfRoom: Vec(TypeOfRoom),
+  amenities: Vec(text),
   price: nat,
   numberofRooms: nat,
   
@@ -78,20 +93,7 @@ const HotelsPayload = Record({
 
 type HotelsPayload = typeof HotelsPayload.tsType;
 
-// const Economy = Record({
-//   price: nat,
-//   availableSeats: nat64,
-// });
 
-// const Business = Record({
-//   price: nat,
-//   availableSeats: nat64,
-// });
-
-// const First = Record({
-//   price: nat,
-//   availableSeats: nat64,
-// });
 
 const FlightClass = Variant({
   Economy: Record({
@@ -142,7 +144,8 @@ const FlightPayload = Record({
 
 type FlightPayload = typeof FlightPayload.tsType;
 
-const BookActivity = Record({
+const activityCard = Record({
+  activityCardId: text,
   activityId: text,
   userName: text,
   userPhoneNumber: text,
@@ -150,51 +153,46 @@ const BookActivity = Record({
   numberOfPeople: nat,
 });
 
-type BookActivity = typeof BookActivity.tsType;
+type activityCard = typeof activityCard.tsType;
 
-const BookActivityPayload = Record({
-  activityId: text,
+const ActivityCardPayload = Record({
   userName: text,
   userPhoneNumber: text,
   date: text,
   numberOfPeople: nat,
 });
 
-type BookActivityPayload = typeof BookActivityPayload.tsType;
+type ActivityCardPayload = typeof ActivityCardPayload.tsType;
 
-const RoomTypes = Variant({
-  Single: text,
-  Double: text,
-  Suite: text,
-  Deluxe: text,
-  Family: text,
-  Business: text,
-  Honeymoon: text,
-  Executive: text,
-  Presidential: text,
-});
 
-type RoomTypes = typeof RoomTypes.tsType;
 
-const BookHotel = Record({
+const HotelCard = Record({
+  hotelCardId: text,
   hotelId: text,
   userName: text,
+  userPhoneNumber: text,
+  date: text,
+  typeOfRoom: text,
   numberOfRooms: nat,
   duration: text,
-  typeOfRoom: text,
 });
 
-type BookHotel = typeof BookHotel.tsType;
+type HotelCard = typeof HotelCard.tsType;
 
 const BookHotelPayload = Record({
-  hotelId: text,
   userName: text,
+  userPhoneNumber: text,
+  date: text,
+  typeOfRoom: text,
   numberOfRooms: nat,
   duration: text,
-  typeOfRoom: text,
 });
 
 type BookHotelPayload = typeof BookHotelPayload.tsType;
+
+
+
+
 
 const Ticket = Record({
   ticketId: text,
@@ -202,6 +200,7 @@ const Ticket = Record({
   flightId: text,
   flightClass: text,
   numberOfSeats: nat,
+  price: nat
 });
 
 type Ticket = typeof Ticket.tsType;
@@ -295,9 +294,9 @@ type Message = typeof Message.tsType;
 const ActivityStorage = StableBTreeMap<text, Activity>(0);
 const HotelsStorage = StableBTreeMap<text, Hotels>(1);
 const FlightStorage = StableBTreeMap<text, Flight>(2);
-const TicketStorage = StableBTreeMap<text, Ticket>(3);
-
+const BookingStorage = StableBTreeMap<text, activityCard | HotelCard |  Ticket>(4);
 const ReviewsStorage = StableBTreeMap<text, Reviews>(5);
+
 
 export default Canister({
   //add activity
@@ -342,11 +341,41 @@ export default Canister({
     Result(Hotels, Message),
     (payload) => {
       const hotelId = uuidv4();
+      
+      //set available rooms to a fraction of total rooms depending on the type of room
+      const totalRooms = payload.numberofRooms;
+      payload.typeOfRoom.map((room) => {
+        if (room.Single) {
+          room.Single.availableRooms = totalRooms / BigInt(2);
+        }
+        if (room.Double) {
+          room.Double.availableRooms = totalRooms / BigInt(4);
+        }
+        if (room.Suite) {
+          room.Suite.availableRooms = totalRooms / BigInt(5);
+        }
+      });
+
+      //set price for each type of room as a multiple of the base price and the room price
+      payload.typeOfRoom.map((room) => {
+        if (room.Single) {
+          room.Single.price = payload.price * room.Single.price;
+        }
+        if (room.Double) {
+          room.Double.price = payload.price * room.Double.price;
+        }
+        if (room.Suite) {
+          room.Suite.price = payload.price * room.Suite.price;
+        }
+      });
+
+
       const hotel = { hotelId, guests: [], reviews: [], rating: [], ...payload };
       HotelsStorage.insert(hotelId, hotel);
       return Ok(hotel);
     }
   ),
+
 
   //get hotels
   getHotels: query([], Vec(Hotels), () => {
@@ -359,17 +388,6 @@ export default Canister({
     return hotel ? Ok(hotel) : Err("Hotel not found");
   }),
 
-  //add flight
-  // addFlight: update(
-  //   [FlightPayload],
-  //   Result(Vec(Flight), Message),
-  //   (payload) => {
-  //     const flightId = uuidv4();
-  //     const flight = { flightId, tickets: [], ...payload };
-  //     FlightStorage.insert(flightId, flight);
-  //     return Ok([flight]);
-  //   }
-  // ),
   addFlight: update([FlightPayload], Result(Flight, Message), (payload) => {
     const flightId = uuidv4();
     //set available seats to a fraction of total seats depending on the class
@@ -424,42 +442,91 @@ export default Canister({
 
   //book activity
   bookActivity: update(
-    [BookActivityPayload],
-    Result(Vec(Activity), Message),
-    (payload) => {
-      const activity = ActivityStorage.get(payload.activityId);
+    [ActivityCardPayload, text],
+    Result(text, Message),
+    (payload, activityId) => {
+      const activity = ActivityStorage.get(activityId);
       if (!activity) {
         return Err("Activity not found");
       }
-      const { activityId, numberOfPeople } = payload;
-
-      activity.participants.push(payload.userName);
+      const activityCardId = uuidv4();
+      const activityCard = { activityCardId, ...payload, activityId: activityId };
+    BookingStorage.insert(activityCardId, activityCard);
+      activity.participants.push(activityCard.activityCardId);
       ActivityStorage.insert(activityId, activity);
-      return Ok([activity]);
+      return Ok(activityCardId);
     }
   ),
+
+  //get activity cards
+  getActivityCards: query([], Vec(activityCard), () => {
+    return BookingStorage.values().filter((booking) => 'activityCardId' in booking);
+  }),
+
+  //get activity card for an activity
+  getActivityCard: query([text], Result(activityCard, Message), (id) => {
+    const activityCard = BookingStorage.get(id);
+    return activityCard ? Ok(activityCard) : Err("Activity Card not found");
+  }),
+
 
   //book hotel
   bookHotel: update(
-    [BookHotelPayload],
-    Result(Vec(Hotels), Message),
-    (payload) => {
-      const hotel = HotelsStorage.get(payload.hotelId);
+    [BookHotelPayload, text],
+    Result(text, Message),
+    (payload, hotelId) => {
+      const hotel = HotelsStorage.get(hotelId);
       if (!hotel) {
         return Err("Hotel not found");
       }
-      const { hotelId, numberOfRooms } = payload;
 
-      if (hotel.availableRooms < numberOfRooms) {
-        return Err("Not enough rooms available");
-      }
-      hotel.availableRooms -= numberOfRooms;
+      //price of booking is the price of the room multiplied by the number of rooms
+      const price = hotel.typeOfRoom.reduce((acc, room) => {
+        if (room.Single) {
+          return acc + room.Single.price * payload.numberOfRooms;
+        }
+        if (room.Double) {
+          return acc + room.Double.price * payload.numberOfRooms;
+        }
+        if (room.Suite) {
+          return acc + room.Suite.price * payload.numberOfRooms;
+        }
+        return acc;
+      }, BigInt(0));
+
+      //set the number of available rooms to the number of rooms minus the number of rooms booked
+     const { typeOfRoom, numberOfRooms } = payload;
+      hotel.typeOfRoom.map((room) => {
+        if (room.Single && typeOfRoom === "Single") {
+          room.Single.availableRooms -= numberOfRooms;
+        }
+        if (room.Double && typeOfRoom === "Double") {
+          room.Double.availableRooms -= numberOfRooms;
+        }
+        if (room.Suite && typeOfRoom === "Suite") {
+          room.Suite.availableRooms -= numberOfRooms;
+        }
+      });
+      
+      const hotelCardId = uuidv4();
+      const hotelCard = { hotelCardId, ...payload, hotelId: hotelId };
+      BookingStorage.insert(hotelCardId, hotelCard);
+      hotel.guests.push(hotelCard.hotelCardId);
       HotelsStorage.insert(hotelId, hotel);
-      hotel.guests.push(payload.userName);
-
-      return Ok([hotel]);
+      return Ok(hotelCardId);
     }
   ),
+
+  //get hotel cards
+  getHotelCards: query([], Vec(HotelCard), () => {
+    return BookingStorage.values().filter((booking) => 'hotelCardId' in booking);
+  }),
+
+  //get hotel card for a hotel
+  getHotelCard: query([text], Result(HotelCard, Message), (id) => {
+    const hotelCard = BookingStorage.get(id);
+    return hotelCard ? Ok(hotelCard) : Err("Hotel Card not found");
+  }),
 
   //book flight
   bookFlight: update(
@@ -499,86 +566,61 @@ export default Canister({
         return Err("Not enough seats available");
       }
 
-      flight.totalSeats -= numberOfSeats;
+         flight.totalSeats -= numberOfSeats;
 
+
+      //price of ticket is the price of the class multiplied by the number of seats
+      
+      const price = flight.flightClass.reduce((acc, flight) => {
+        if (flight.Economy && flightClass === "Economy") {
+          return acc + flight.Economy.price * numberOfSeats;
+        }
+        if (flight.Business && flightClass === "Business") {
+          return acc + flight.Business.price * numberOfSeats;
+        }
+        if (flight.First && flightClass === "First") {
+          return acc + flight.First.price * numberOfSeats;
+        }
+        return acc;
+      }, BigInt(0));
+
+
+   
       const ticketId = uuidv4();
-      const ticket = { ticketId, ...payload, flightId: flightId };
-      TicketStorage.insert(ticketId, ticket);
-      flight.tickets.push(ticket.ticketId);
+      const ticket = { ticketId, ...payload, flightId, price };
+      BookingStorage.insert(ticketId, ticket);
+      flight.tickets.push(ticketId);
       FlightStorage.insert(flightId, flight);
       return Ok(ticketId);
     }
   ),
 
-  //book flight and send ticket to passengers
-  // bookFlight: update(
-  //   [TicketPayload, text],
-  //   Result(text, Message),
-  //   (payload, id) => {
-  //     const flight = FlightStorage.get(id);
-  //     if (!flight) {
-  //       return Err("Flight not found");
-  //     }
-  //     const { flightClass, numberOfSeats } = payload;
 
-  //     const totalSeats = flight.totalSeats;
-  //     if (flightClass === "Economy") {
-  //       flight.flightClass.map((flight) => {
-  //         if (flight.Economy) {
-  //           flight.Economy.availableSeats -= numberOfSeats;
-  //         }
-  //       });
-  //     }
-  //     if (flightClass === "Business") {
-  //       flight.flightClass.map((flight) => {
-  //         if (flight.Business) {
-  //           flight.Business.availableSeats -= numberOfSeats;
-  //         }
-  //       });
-  //     }
-  //     if (flightClass === "First") {
-  //       flight.flightClass.map((flight) => {
-  //         if (flight.First) {
-  //           flight.First.availableSeats -= numberOfSeats;
-  //         }
-  //       });
-  //     }
-
-  //     if (flight.totalSeats < numberOfSeats) {
-  //       return Err("Not enough seats available");
-  //     }
-
-  //     flight.totalSeats -= numberOfSeats;
-
-  //     const ticketId = uuidv4();
-  //     const ticket = { ticketId, ...payload, flightId: id };
-  //     TicketStorage.insert(ticketId, ticket);
-  //     flight.tickets.push(ticket.ticketId);
-  //     FlightStorage.insert(id, flight);
-  //     return Ok(ticketId);
-  //   }
-  // ),
 
   //get ticket
   getTicket: query([text], Result(Ticket, Message), (id) => {
-    const ticket = TicketStorage.get(id);
+    const ticket = BookingStorage.get(id);
     return ticket ? Ok(ticket) : Err("Ticket not found");
   }),
+ 
 
   //get tickets
   getTickets: query([], Vec(Ticket), () => {
-    return TicketStorage.values();
+    return BookingStorage.values().filter((booking) => 'ticketId' in booking);
   }),
+
 
   //get ticket by flightid
   getTicketByFlightId: query([text], Vec(Ticket), (id) => {
-    const tickets = TicketStorage.values();
-    return tickets.filter((ticket) => ticket.flightId === id);
+    const ticket = BookingStorage.values().filter((booking) => 'ticketId' in booking);
+    return ticket ? ticket : [];
+
+    
   }),
 
   //get ticket by id
   getTicketById: query([text], Result(Ticket, Message), (id) => {
-    const ticket = TicketStorage.get(id);
+    const ticket = BookingStorage.get(id);
     return ticket ? Ok(ticket) : Err("Ticket not found");
   }),
 
@@ -663,52 +705,7 @@ export default Canister({
     return review ? Ok(review) : Err("Review not found");
   }),
 
-  // //book service
-  // bookService: update(
-  //   [BookingPayload],
-  //   Result(Vec(Booking), Message),
-  //   (payload) => {
 
-  //     const bookingId = uuidv4();
-  //     const booking = { bookingId, ...payload };
-  //     BookingStorage.insert(bookingId, booking);
-  //    // ActivityStorage.insert(bookingId, booking);
-  //     return Ok([booking]);
-  //   }
-  // ),
 });
 
-// const getCurrentDate = () => {
-//   const timestamp = new Number(ic.time());
-//   const date = new Date(timestamp.valueOf() / 1_000_000); // Convert from nanoseconds to milliseconds
-//   return date.toISOString().split('T')[0]; // Returns 'YYYY-MM-DD'
-// };
 
-// function getJobStatistics(jobPosts:any) {
-//   // Initialize counters
-//   let totalJobs = jobPosts.length;
-//   let openJobs = 0;
-//   let closedJobs = 0;
-//   let industrySet = new Set();
-
-//   // Loop through each job post and gather statistics
-//   jobPosts.forEach((job:any) => {
-//     // Count open and closed jobs based on status
-//     if (job.status === 'open') {
-//       openJobs++;
-//     } else if (job.status === 'closed') {
-//       closedJobs++;
-//     }
-
-//     // Add industry to the set (set automatically handles uniqueness)
-//     industrySet.add(job.industry);
-//   });
-
-//   // Return the statistics as an object
-//   return {
-//     totalJobs: totalJobs,
-//     openJobs: openJobs,
-//     closedJobs: closedJobs,
-//     totalIndustries: industrySet.size
-//   };
-// }

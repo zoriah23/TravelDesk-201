@@ -11,18 +11,20 @@ const Activity = ({ activity }) => {
   const servicePrincipal = window.auth.principalText;
 
   return (
-    <Col>
+    <div className="p-4">
       <Card
-        className="w-[200px] h-[300px]"
+        className="w-52 h-72 shadow-lg rounded-lg cursor-pointer"
         onClick={() =>
           navigate(
             `/activityInfo?canisterId=bd3sg-teaaa-aaaaa-qaaba-cai&activityId=${activityId}`
           )
         }
       >
-        <Card.Body>
-          <Card.Title>Activity: {activityName}</Card.Title>
-          <Card.Text>
+        <Card.Body className="text-center">
+          <Card.Title className="text-lg font-bold">
+            Activity: {activityName}
+          </Card.Title>
+          <Card.Text className="text-gray-600 space-y-2">
             <p>Price: {price}</p>
             <p>Location: {location}</p>
             <p>Duration: {duration}</p>
@@ -30,7 +32,7 @@ const Activity = ({ activity }) => {
           </Card.Text>
         </Card.Body>
       </Card>
-    </Col>
+    </div>
   );
 };
 
