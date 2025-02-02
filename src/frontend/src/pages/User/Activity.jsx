@@ -11,6 +11,7 @@ import {
 } from "../../components/utlis/Notifications";
 import { useLocation, useNavigate } from "react-router-dom";
 import BookActivity from "../../components/Services/Activities/User/BookActivity";
+import NavBar from "../../components/User/NavBar";
 
 const ActivityPage = () => {
   const [loading, setLoading] = useState(false);
@@ -92,6 +93,7 @@ const ActivityPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <NavBar />
       {!loading ? (
         <div className="bg-white p-6 shadow-lg rounded-lg w-full max-w-lg">
           <h1 className="text-3xl font-bold text-center mb-4">Activity Info</h1>

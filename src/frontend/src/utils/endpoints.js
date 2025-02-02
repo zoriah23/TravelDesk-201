@@ -230,9 +230,6 @@ export async function getTicketsByFlight(flightId) {
   }
 }
 
-
-
-
 //get flights by location
 export async function getFlightsByLocation(location) {
   try {
@@ -246,6 +243,21 @@ export async function getFlightsByLocation(location) {
     return [];
   }
 }
+
+//search for flights based on destination
+export async function searchFlights(destination) {
+  try {
+    return await window.canister.TravelDeskApi.searchFlights(destination);
+  } catch (err) {
+    if (err.name === "AgentHTTPResponseError") {
+      const authClient = window.auth.client;
+      await authClient.logout();
+    }
+  }
+}
+
+//search for flights based on location
+
 
 
 

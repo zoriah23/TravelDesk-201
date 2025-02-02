@@ -7,6 +7,7 @@ import {
 import { useLocation } from "react-router";
 import { getHotels, bookHotel } from "../../utils/endpoints";
 import BookHotel from "../../components/Services/Hotel/User/BookHotel";
+import NavBar from "../../components/User/NavBar";
 
 
 const HotelPage = () => {
@@ -86,6 +87,7 @@ const triggerBook = ({userName, userPhoneNumber, date, duration, numberOfRooms, 
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <NavBar />
       {!loading ? (
         <div className="bg-white p-6 shadow-lg rounded-lg w-full max-w-lg">
           <h1 className="text-3xl font-bold text-center mb-4">Hotel Info</h1>

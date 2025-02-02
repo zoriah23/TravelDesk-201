@@ -213,51 +213,6 @@ const TicketPayload = Record({
 
 type TicketPayload = typeof TicketPayload.tsType;
 
-// const BookFlight = Record({
-//   flightId: text,
-
-//   userName: text,
-//   NumberOfSeats: nat,
-//   class: text,
-// });
-
-// type BookFlight = typeof BookFlight.tsType;
-
-// const BookFlightPayload = Record({
-//   flightId: text,
-//   userName: text,
-//   NumberOfSeats: nat,
-//   class: text,
-// });
-
-// type BookFlightPayload = typeof BookFlightPayload.tsType;
-
-// const Services = Variant({
-//   Activity: BookActivity,
-//   Hotels: BookHotel,
-//   Flight: BookFlight,
-// });
-
-// type Services = typeof Services.tsType;
-
-// const Booking = Record({
-//   bookingId: text,
-//   serviceBooked: Services,
-// });
-
-// type Booking = typeof Booking.tsType;
-
-//  const BookingPayload = Record({
-//    serviceBooked: Services,
-
-//  });
-
-//  type BookingPayload = typeof BookingPayload.tsType;
-
-// const UpdateBookingPayload = Record({
-//   bookingId: text,
-//   status: text,
-// });
 
 const Reviews = Record({
   reviewId: text,
@@ -329,7 +284,7 @@ export default Canister({
     return activity ? Ok(activity) : Err("Activity not found");
   }),
 
-  //get list of users who have booked an activity
+  //get list of users 
   getActivityParticipants: query([text], Vec(text), (id) => {
     const activity = ActivityStorage.get(id);
     return activity ? activity.participants : [];
@@ -342,21 +297,21 @@ export default Canister({
     (payload) => {
       const hotelId = uuidv4();
       
-      //set available rooms to a fraction of total rooms depending on the type of room
+     
       const totalRooms = payload.numberofRooms;
       payload.typeOfRoom.map((room) => {
         if (room.Single) {
-          room.Single.availableRooms = totalRooms / BigInt(2);
+          room.Single.availableRooms = totalRooms / room.Single.availableRooms;
         }
         if (room.Double) {
-          room.Double.availableRooms = totalRooms / BigInt(4);
+          room.Double.availableRooms = totalRooms / room.Double.availableRooms;
         }
         if (room.Suite) {
-          room.Suite.availableRooms = totalRooms / BigInt(5);
+          room.Suite.availableRooms = totalRooms / room.Suite.availableRooms;
         }
       });
 
-      //set price for each type of room as a multiple of the base price and the room price
+     
       payload.typeOfRoom.map((room) => {
         if (room.Single) {
           room.Single.price = payload.price * room.Single.price;
@@ -390,21 +345,21 @@ export default Canister({
 
   addFlight: update([FlightPayload], Result(Flight, Message), (payload) => {
     const flightId = uuidv4();
-    //set available seats to a fraction of total seats depending on the class
+   //set number of seats per class
     const totalSeats = payload.totalSeats;
     payload.flightClass.map((flight) => {
       if (flight.Economy) {
-        flight.Economy.availableSeats = totalSeats / BigInt(2);
+        flight.Economy.availableSeats = totalSeats / flight.Economy.availableSeats;
       }
       if (flight.Business) {
-        flight.Business.availableSeats = totalSeats / BigInt(4);
+        flight.Business.availableSeats = totalSeats / flight.Business.availableSeats;
       }
       if (flight.First) {
-        flight.First.availableSeats = totalSeats / BigInt(5);
+        flight.First.availableSeats = totalSeats / flight.First.availableSeats;
       }
     });
 
-    //set price for each class as a multiple of the base price and the class price
+    //set price for each class 
     payload.flightClass.map((flight) => {
       if (flight.Economy) {
         flight.Economy.price = payload.basePrice * flight.Economy.price;
@@ -438,7 +393,6 @@ export default Canister({
     return flights.filter((flight) => flight.totalSeats > 0);
   }),
 
-  //booking
 
   //book activity
   bookActivity: update(
@@ -480,7 +434,7 @@ export default Canister({
         return Err("Hotel not found");
       }
 
-      //price of booking is the price of the room multiplied by the number of rooms
+     
       const price = hotel.typeOfRoom.reduce((acc, room) => {
         if (room.Single) {
           return acc + room.Single.price * payload.numberOfRooms;
@@ -494,7 +448,7 @@ export default Canister({
         return acc;
       }, BigInt(0));
 
-      //set the number of available rooms to the number of rooms minus the number of rooms booked
+     
      const { typeOfRoom, numberOfRooms } = payload;
       hotel.typeOfRoom.map((room) => {
         if (room.Single && typeOfRoom === "Single") {
@@ -569,7 +523,7 @@ export default Canister({
          flight.totalSeats -= numberOfSeats;
 
 
-      //price of ticket is the price of the class multiplied by the number of seats
+   
       
       const price = flight.flightClass.reduce((acc, flight) => {
         if (flight.Economy && flightClass === "Economy") {
@@ -639,7 +593,7 @@ export default Canister({
   //search for flights based on destination
   searchFlights: query([text], Vec(Flight), (destination) => {
     const flights = FlightStorage.values();
-    return flights.filter((flight) => flight.destination === destination);
+    return flights.filter((flight) => flight.destination.toLowerCase() === destination.toLocaleLowerCase());
   }),
 
   //search for hotels based on location
@@ -674,13 +628,8 @@ export default Canister({
     return activity ? activity.participants : [];
   }),
 
-  //get passengers who have booked a flight
+ 
 
-  //get guests who have booked a hotel
-  getGuests: query([text], Vec(text), (hotelId) => {
-    const hotel = HotelsStorage.get(hotelId);
-    return hotel ? hotel.guests : [];
-  }),
 
   //add review
   addReview: update(

@@ -51,16 +51,6 @@ const UserDashboard = () => {
                 </Link>
               </div>
             </div>
-            
-            <div className="mt-6">
-              <h2 className="text-2xl font-semibold">Search</h2>
-              <p className="text-gray-600">Search for flights, hotels, and activities.</p>
-              <input 
-                type="text" 
-                className="w-full mt-2 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400" 
-                placeholder="Search"
-              />
-            </div>
           </div>
         </>
       ) : (

@@ -7,6 +7,7 @@ import {
 import { useLocation } from "react-router";
 import { getFlights, bookFlight, getFlight } from "../../utils/endpoints";
 import BookFlight from "../../components/Services/Flight/User/BookFlight";
+import NavBar from "../../components/User/NavBar";
 
 const FlightPage = () => {
   const [loading, setLoading] = useState(false);
@@ -79,6 +80,7 @@ const FlightPage = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <NavBar />
       {!loading ? (
         <div className="bg-white p-6 shadow-lg rounded-lg w-full max-w-lg">
           <h1 className="text-3xl font-bold text-center mb-4">
